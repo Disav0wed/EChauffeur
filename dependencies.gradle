@@ -1,0 +1,6 @@
+ext{
+
+    retrofit = 'com.squareup.retrofit2:retrofit:'+retrofit_version
+    retrofitGsonConverter = 'com.squareup.retrofit2:converter-gson:'+retrofitGsonConverter_version
+
+}
