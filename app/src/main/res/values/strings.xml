@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">EChauffeur</string>
+    <string name="bottom_nav_listfragment_item_title">List</string>
+    <string name="bottom_nav_mapfragment_item_title">Map</string>
 </resources>
