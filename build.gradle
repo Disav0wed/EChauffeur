@@ -11,6 +11,7 @@ buildscript {
         fragment_version = "1.4.0"
         retrofitGsonConverter_version = "2.9.0"
         nav_version = "2.3.5"
+        googlemaps_version = "18.0.0"
     }
 
     repositories {
