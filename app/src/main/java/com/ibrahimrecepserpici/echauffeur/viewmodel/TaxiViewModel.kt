@@ -1,14 +1,14 @@
 package com.ibrahimrecepserpici.echauffeur.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.ibrahimrecepserpici.domain.entity.Coordinate
 import com.ibrahimrecepserpici.domain.entity.VehicleInfo
 import com.ibrahimrecepserpici.domain.usecase.vehicle.IGetVehicleInfosUseCase
+import com.ibrahimrecepserpici.echauffeur.enums.FragmentType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +24,11 @@ class TaxiViewModel @Inject constructor(private val getVehicleInfoUseCase: IGetV
      * Holds & emits the number of which vehicle is selected
      */
     var selectedVehicleLiveData = MutableLiveData<Int>()
+
+    /**
+     * A callback to trigger activity to change fragments
+     */
+    var navigateToFragment: ((FragmentType)->Unit)? = null
 
     /**
      * Fetches the vehicle information from given area and emits the result by using MutableLiveData(vehicleInfoLiveData)
