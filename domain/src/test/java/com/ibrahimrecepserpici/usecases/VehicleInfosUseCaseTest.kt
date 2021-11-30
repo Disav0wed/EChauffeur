@@ -9,18 +9,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
 import org.mockito.ArgumentMatchers.anyDouble
-import org.mockito.kotlin.mock
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import java.io.IOException
 import java.util.concurrent.CountDownLatch
 
-@RunWith(JUnit4::class)
 class VehicleInfosUseCaseTest {
 
-    private val vehicleInfoRepository = mock<VehicleRepository>()
+    private val vehicleInfoRepository = mock(VehicleRepository::class.java)
 
     var requestLatch = CountDownLatch(1)
     var responseLatch = CountDownLatch(1)
@@ -29,13 +26,11 @@ class VehicleInfosUseCaseTest {
         VehicleInfosUseCase(vehicleInfoRepository)
     }
 
-
     @Before
     fun init(){
         requestLatch = CountDownLatch(1)
         responseLatch = CountDownLatch(1)
     }
-
 
     @Test
     fun testGetVehicleInfoCompleted(){
@@ -48,7 +43,7 @@ class VehicleInfosUseCaseTest {
                     anyDouble(),
                     anyDouble()
                 )
-            ).thenReturn(kotlin.Result.success(emptyList()))
+            ).thenReturn(Result.success(emptyList()))
             requestLatch.countDown()
         }
         requestLatch.await()
@@ -86,6 +81,35 @@ class VehicleInfosUseCaseTest {
         }
         responseLatch.await()
         assert(result!!.isFailure)
+    }
+
+    @Test
+    fun testGetVehicleInfoResponse(){
+
+        val testInfo = VehicleInfo(Coordinate(0.0,0.0),"TAXI",0.0,3761)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            whenever(
+                vehicleInfoRepository.getVehiclesInRegion(
+                    anyDouble(),
+                    anyDouble(),
+                    anyDouble(),
+                    anyDouble()
+                )
+            ).thenReturn(Result.success(mutableListOf(testInfo)))
+            requestLatch.countDown()
+        }
+        requestLatch.await()
+
+        var result:List<VehicleInfo>? = null
+        CoroutineScope(Dispatchers.IO).launch {
+            result = getVehicleInfosUseCase.getVehicleInfosInRegion(Coordinate(0.0,0.0),Coordinate(0.0,0.0)).getOrNull()
+            responseLatch.countDown()
+        }
+        responseLatch.await()
+        assert(result != null)
+        assert(result!!.size == 1)
+        assert(result!![0] == testInfo)
     }
 
 }
