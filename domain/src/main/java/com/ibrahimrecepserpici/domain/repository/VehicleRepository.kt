@@ -7,5 +7,5 @@ interface VehicleRepository {
     suspend fun getVehiclesInRegion(p1Latitude: Double,
                                     p1Longitude: Double,
                                     p2Latitude: Double,
-                                    p2Longitude: Double): List<VehicleInfo>
+                                    p2Longitude: Double): Result<List<VehicleInfo>>
 }

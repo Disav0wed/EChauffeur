@@ -1,18 +1,18 @@
 package com.ibrahimrecepserpici.echauffeur.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ibrahimrecepserpici.domain.entity.Coordinate
 import com.ibrahimrecepserpici.domain.entity.VehicleInfo
-import com.ibrahimrecepserpici.domain.usecase.vehicle.IGetVehicleInfosUseCase
+import com.ibrahimrecepserpici.domain.usecase.vehicle.IVehicleInfosUseCase
 import com.ibrahimrecepserpici.echauffeur.enums.FragmentType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
-class TaxiViewModel @Inject constructor(private val getVehicleInfoUseCase: IGetVehicleInfosUseCase) :
+class TaxiViewModel @Inject constructor(private val vehicleInfoUseCase: IVehicleInfosUseCase) :
     ViewModel() {
 
     /**
@@ -37,10 +37,17 @@ class TaxiViewModel @Inject constructor(private val getVehicleInfoUseCase: IGetV
      * @param point2 diagonal corner of the rectangular area to be searched
      */
     fun fetchVehicleInformationInArea(point1: Coordinate, point2: Coordinate){
-        GlobalScope.async {
+        CoroutineScope(Dispatchers.IO).launch {
             kotlin.runCatching {
-                val vehicleInfo = getVehicleInfoUseCase.getVehicleInfosInRegion(point1,point2)
-                vehicleInfoLiveData.postValue(vehicleInfo)
+                val vehicleInfoResult = vehicleInfoUseCase.getVehicleInfosInRegion(point1,point2)
+                vehicleInfoResult
+                    .onSuccess {
+                    vehicleInfoLiveData.postValue(it)
+                }
+                    .onFailure {
+                    Log.e("Error",it.stackTraceToString())
+                }
+
             }
         }
     }

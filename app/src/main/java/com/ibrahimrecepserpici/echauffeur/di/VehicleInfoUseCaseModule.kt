@@ -1,7 +1,7 @@
 package com.ibrahimrecepserpici.echauffeur.di
 
-import com.ibrahimrecepserpici.domain.usecase.vehicle.GetVehicleInfosUseCase
-import com.ibrahimrecepserpici.domain.usecase.vehicle.IGetVehicleInfosUseCase
+import com.ibrahimrecepserpici.domain.usecase.vehicle.VehicleInfosUseCase
+import com.ibrahimrecepserpici.domain.usecase.vehicle.IVehicleInfosUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,5 +14,5 @@ abstract class VehicleInfoUseCaseModule {
 
     @Binds
     @ViewModelScoped
-    abstract fun provideVehicleInfoUseCase(getVehicleInfosUseCase: GetVehicleInfosUseCase) : IGetVehicleInfosUseCase
+    abstract fun provideVehicleInfoUseCase(vehicleInfosUseCase: VehicleInfosUseCase) : IVehicleInfosUseCase
 }
