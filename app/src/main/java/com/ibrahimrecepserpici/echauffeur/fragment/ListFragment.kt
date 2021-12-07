@@ -17,9 +17,9 @@ import com.ibrahimrecepserpici.echauffeur.viewmodel.TaxiViewModel
 
 class ListFragment : Fragment(), ItemClickListener {
 
-    lateinit var vehicleInfoListAdapter: VehicleInfoListAdapter
+    private lateinit var vehicleInfoListAdapter: VehicleInfoListAdapter
     private val taxiViewModel: TaxiViewModel by activityViewModels()
-    private lateinit var binding: FragmentListBinding
+    private  var binding: FragmentListBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +28,7 @@ class ListFragment : Fragment(), ItemClickListener {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentListBinding.inflate(inflater)
-            return binding.root
+        return binding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,9 +38,9 @@ class ListFragment : Fragment(), ItemClickListener {
         val divider = DividerItemDecoration(activity,DividerItemDecoration.VERTICAL)
         vehicleInfoListAdapter = VehicleInfoListAdapter()
         vehicleInfoListAdapter.itemClickListener = this
-        binding.rvVehicleInfo.layoutManager = layoutManager
-        binding.rvVehicleInfo.adapter = vehicleInfoListAdapter
-        binding.rvVehicleInfo.addItemDecoration(divider)
+        binding!!.rvVehicleInfo.layoutManager = layoutManager
+        binding!!.rvVehicleInfo.adapter = vehicleInfoListAdapter
+        binding!!.rvVehicleInfo.addItemDecoration(divider)
 
         // Observe vehicle info list changes & update recyclerview accordingly
         taxiViewModel.vehicleInfoLiveData.observe(this, Observer {
@@ -52,5 +52,11 @@ class ListFragment : Fragment(), ItemClickListener {
     override fun onRecyclerViewItemClick(position: Int) {
         taxiViewModel.selectedVehicleLiveData.postValue(position)
         taxiViewModel.navigateToFragment?.let { it(FragmentType.MAP) }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding?.rvVehicleInfo?.adapter = null
+        binding = null
     }
 }

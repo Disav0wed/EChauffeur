@@ -6,9 +6,10 @@ import com.ibrahimrecepserpici.domain.entity.Coordinate
 import com.ibrahimrecepserpici.domain.entity.VehicleInfo
 import com.ibrahimrecepserpici.domain.usecase.vehicle.VehicleInfosUseCase
 import com.ibrahimrecepserpici.echauffeur.enums.FragmentType
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -16,6 +17,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.concurrent.CountDownLatch
 
+@ExperimentalCoroutinesApi
 class TaxiViewModelTest{
 
     @Rule
@@ -24,8 +26,11 @@ class TaxiViewModelTest{
 
     private val vehicleInfosUseCase = mock<VehicleInfosUseCase>()
 
-    var requestLatch = CountDownLatch(1)
     var responseLatch = CountDownLatch(1)
+
+    private val testDispatcher = StandardTestDispatcher()
+    private val testCoroutineScope = TestScope(testDispatcher)
+
 
     private val taxiViewModel by lazy {
         TaxiViewModel(vehicleInfosUseCase)
@@ -33,24 +38,27 @@ class TaxiViewModelTest{
 
     @Before
     fun init(){
-        requestLatch = CountDownLatch(1)
         responseLatch = CountDownLatch(1)
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @After
+    fun cleanUp(){
+        Dispatchers.resetMain()
     }
 
     @Test
     fun testVehicleInfoObserved(){
 
         var result : List<VehicleInfo>? = null
-        CoroutineScope(Dispatchers.IO).launch {
+        testCoroutineScope.runTest {
             whenever(
                 vehicleInfosUseCase.getVehicleInfosInRegion(
                     Coordinate(0.0,0.0),
                     Coordinate(0.0,0.0)
                 )
             ).thenReturn(Result.success(mutableListOf(VehicleInfo(Coordinate(0.0,0.0),"TAXI",0.0,2451))))
-            requestLatch.countDown()
         }
-        requestLatch.await()
         taxiViewModel.fetchVehicleInformationInArea(
             Coordinate(0.0,0.0),
             Coordinate(0.0,0.0)
